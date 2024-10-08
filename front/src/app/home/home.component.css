@@ -1,0 +1,84 @@
+/* Navbar styles */
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #040815;
+    padding: 10px 20px;
+    color: rgb(255, 255, 255);
+  }
+  
+  .navbar-brand a {
+    color: rgb(35, 214, 169);
+    text-decoration: none;
+    font-size: 24px;
+  }
+  
+  .navbar-nav {
+    list-style: none;
+    display: flex;
+    gap: 15px;
+  }
+  
+  .navbar-nav a {
+    color: white;
+    text-decoration: none;
+    font-size: 18px;
+  }
+  
+  /* Main container for cards */
+  .container {
+    display: flex;
+    justify-content: space-around;
+    padding: 20px;
+  }
+  
+  .card {
+    width: 250px;
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    padding: 15px;
+    text-align: center;
+  }
+  
+  .card img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 5px;
+  }
+  
+  .card h3 {
+    margin-top: 15px;
+    font-size: 20px;
+  }
+  
+  .card p {
+    font-size: 14px;
+    color: #666;
+  }
+  
+  .search-form {
+    display: inline-flex; /* Muestra el formulario en línea */
+    align-items: center; /* Alinea el contenido verticalmente */
+  }
+  
+  .search-form input {
+    padding: 5px; /* Espaciado interno */
+    margin-right: 5px; /* Espaciado a la derecha */
+    border: 1px solid #ccc; /* Bordes del campo */
+    border-radius: 4px; /* Bordes redondeados */
+  }
+  
+  .search-form button {
+    padding: 5px 10px; /* Espaciado interno */
+    background-color: #007bff; /* Color de fondo */
+    color: white; /* Color del texto */
+    border: none; /* Sin bordes */
+    border-radius: 4px; /* Bordes redondeados */
+    cursor: pointer; /* Cambia el cursor al pasar sobre el botón */
+  }
+  
+  .search-form button:hover {
+    background-color: #0056b3; /* Color al pasar el cursor */
+  }

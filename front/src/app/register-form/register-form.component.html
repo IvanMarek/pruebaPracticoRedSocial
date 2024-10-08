@@ -1,0 +1,30 @@
+<form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
+    <h2>Registrar Usuario</h2>
+    <div>
+      <label for="email">E-mail:</label>
+      <input id="email" formControlName="email" required />
+    </div>
+
+    <div>
+      <label for="username">Usuario:</label>
+      <input id="username" formControlName="username" required />
+    </div>
+  
+    <div>
+      <label for="password">Contraseña:</label>
+      <input id="password" type="password" formControlName="password" required />
+    </div>
+  
+    <div>
+      <label for="confirmPassword">Confirmar Contraseña:</label>
+      <input id="confirmPassword" type="password" formControlName="confirmPassword" required />
+      <div *ngIf="registerForm.value.password !== registerForm.value.confirmPassword">
+        <small>Las Contraseña no coinciden .</small>
+      </div>
+    </div>
+  
+    <button type="submit" [disabled]="registerForm.invalid">Registrar</button>
+
+    <button (click)="navegar()">Iniciar Sesión</button>
+  </form>
+  

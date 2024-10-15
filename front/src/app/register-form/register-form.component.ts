@@ -7,11 +7,12 @@ import { Router } from '@angular/router';
 import Swal from 'sweetalert2';
 import { Observable, from } from 'rxjs';
 import { map } from 'rxjs/operators';
+import { MatIconModule } from '@angular/material/icon';
 
 @Component({
   selector: 'app-register-form',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, MatIconModule],
   templateUrl: './register-form.component.html',
   styleUrls: ['./register-form.component.css']
 })
@@ -22,9 +23,9 @@ export class RegisterFormComponent implements OnInit {
   constructor(private fb: FormBuilder, private service: NombreServicioService, private router: Router) {
     this.registerForm = this.fb.group({
       email: ['', [Validators.required, Validators.email], [this.emailExistsValidator.bind(this)]],
-      username: [''],
-      password: [''],
-      confirmPassword: ['']
+      username: ['', [Validators.required]], // Campo usuario obligatorio
+      password: ['', [Validators.required]], // Campo contraseña obligatorio
+      confirmPassword: [''] // Campo confirmar contraseña opcional
     });
   }
 
@@ -48,33 +49,52 @@ export class RegisterFormComponent implements OnInit {
   }
 
   onSubmit() {
-    const { email, password, confirmPassword, username } = this.registerForm.value;
-    if (password === confirmPassword) {
-      this.service.registrar({ email, nombre: username, contraseña: password }).subscribe((data) => {
-        if (data && data.statusCode === 200) {
-          Swal.fire({
-            icon: 'success',
-            title: '¡Registro exitoso!',
-            showConfirmButton: false,
-            timer: 1500
-          });
-          this.router.navigate(["/login"]);
-        } else {
+    this.registerForm.markAllAsTouched();
+    // Validar que todos los campos obligatorios estén completos
+    if (this.registerForm.valid) {
+      const { email, password, confirmPassword, username } = this.registerForm.value;
+
+      // Verificar que las contraseñas coincidan
+      if (password === confirmPassword) {
+        this.service.registrar({ email, nombre: username, contraseña: password }).subscribe((data) => {
+          if (data && data.statusCode === 200) {
+            Swal.fire({
+              icon: 'success',
+              title: '¡Registro exitoso!',
+              showConfirmButton: false,
+              timer: 1500
+            });
+            this.router.navigate(["/login"]);
+          } else {
+            Swal.fire({
+              icon: 'error',
+              title: 'Error',
+              text: 'Error al registrar',
+            });
+          }
+        }, error => {
           Swal.fire({
             icon: 'error',
-            title: 'Error',
-            text: 'Error al registrar',
+            title: 'Error en el servidor',
+            text: error.message
           });
-        }
-      }, error => {
-        Swal.fire({
-          icon: 'error',
-          title: 'Error en el servidor',
-          text: error.message
         });
-      });
+      } else {
+        Swal.fire({
+          icon: 'warning',
+          title: 'Advertencia',
+          text: 'Las contraseñas no coinciden.'
+        });
+        console.log('Las contraseñas no coinciden');
+      }
     } else {
-      console.log('Las contraseñas no coinciden');
+      // Mostrar un mensaje de error si hay campos vacíos
+      Swal.fire({
+        icon: 'warning',
+        title: 'Error',
+        text: 'Por favor complete todos los campos obligatorios.'
+      });
+      console.log('Los campos obligatorios no están completos');
     }
   }
 

@@ -1,10 +1,25 @@
 <form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
   <h2>Registrar Usuario</h2>
+
   <div>
     <label for="email">E-mail:</label>
     <input id="email" formControlName="email" required />
+
+    <!-- Mensaje de error si el email está vacío -->
+    <div *ngIf="registerForm.get('email')?.hasError('required') && registerForm.get('email')?.touched" class="error-message">
+      <mat-icon class="red-icon">error</mat-icon>
+      <small class="error">El correo electrónico es obligatorio.</small>
+    </div>
+
+    <!-- Mensaje de error si el email no es válido -->
+    <div *ngIf="registerForm.get('email')?.hasError('email') && registerForm.get('email')?.touched" class="error-message">
+      <mat-icon class="red-icon">error</mat-icon>
+      <small class="error">El correo electrónico no es válido.</small>
+    </div>
+
     <!-- Mensaje de error si el email ya existe -->
-    <div *ngIf="registerForm.get('email')?.hasError('emailExists') && registerForm.get('email')?.touched">
+    <div *ngIf="registerForm.get('email')?.hasError('emailExists') && registerForm.get('email')?.touched" class="error-message">
+      <mat-icon class="red-icon">error</mat-icon>
       <small class="error">Este correo ya está registrado.</small>
     </div>
   </div>
@@ -27,8 +42,12 @@
     </div>
   </div>
 
+  <!-- Mensaje de error si hay campos no completos -->
+  <div *ngIf="!registerForm.valid && registerForm.touched" class="error-message">
+    <mat-icon class="red-icon">error</mat-icon>
+    <small class="error">Por favor complete todos los campos obligatorios.</small>
+  </div>
+
   <button type="submit" [disabled]="registerForm.invalid">Registrar</button>
   <button type="button" (click)="navegar()">Iniciar Sesión</button>
 </form>
-
-  

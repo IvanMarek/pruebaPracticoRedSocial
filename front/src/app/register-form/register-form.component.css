@@ -37,4 +37,21 @@ form {
     cursor: pointer;
     margin-bottom: 20px;
   }
+
+  .error-message {
+    display: flex;
+    align-items: center;
+  }
+  
+  .error-message mat-icon {
+    margin-right: 5px;
+  }
+  
+  .error {
+    color: red;
+  }
+  .red-icon {
+    color: red; /* Color rojo para el ícono */
+  }
+  
   

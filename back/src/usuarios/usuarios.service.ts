@@ -19,7 +19,7 @@ export class UsuariosService {
   }
 
   
-  public async comparePasswords(contraseña: string, hashedPassword: string): Promise<string> {
+  public async comparePasswords(contraseña: string, hashedPassword: string): Promise<boolean> {
     return await bcrypt.compare(contraseña, hashedPassword);
  }
  public async create(createUsuarioDto: CreateUsuarioDto) {

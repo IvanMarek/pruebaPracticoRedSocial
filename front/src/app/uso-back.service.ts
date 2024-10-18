@@ -16,16 +16,29 @@ return this.http.get<any>(`${this.apiUrl}`);
 
 
 async cargarCorreos(): Promise<any[]> {
-  // Usa firstValueFrom para convertir el Observable a una Promise
-  const datos = await firstValueFrom(this.http.get<any[]>(`${this.apiUrl}`));
-  
-  // Mapea los datos para obtener solo los correos
-  const correos = datos.map((usuario: any) => ({
-    email: usuario.email
-  }));
+  try {
+    // Usa firstValueFrom para convertir el Observable a una Promise
+    const datos = await firstValueFrom(this.http.get<any>(`${this.apiUrl}`));
 
-  return correos;
+    // Verifica si los datos no son un array (indica que puede ser un error)
+    if (!Array.isArray(datos) && datos.statusCode === 400) {
+      console.log(datos.msg);  // Imprime el mensaje de error en consola
+      return [];  // Retorna un arreglo vacío si hay un error
+    }
+
+    // Si los datos son un array, se procede a mapear los correos
+    const correos = datos.map((usuario: any) => ({
+      email: usuario.email
+    }));
+
+    return correos;
+
+  } catch (error) {
+    console.error("Error al cargar correos:", error);
+    return [];
+  }
 }
+
 
 
 // Método para realizar una solicitud POST

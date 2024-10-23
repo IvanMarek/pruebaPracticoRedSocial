@@ -22,11 +22,11 @@ export class RegisterFormComponent implements OnInit {
 
   constructor(private fb: FormBuilder, private service: NombreServicioService, private router: Router) {
     this.registerForm = this.fb.group({
-      email: ['', [Validators.required, Validators.email], [this.emailExistsValidator.bind(this)]],
+      email: ['', [Validators.required, Validators.email, Validators.maxLength(60)], [this.emailExistsValidator.bind(this)]],
       username: ['', [Validators.required]], // Campo usuario obligatorio
-      password: ['', [Validators.required]], // Campo contraseña obligatorio
-      confirmPassword: [''] // Campo confirmar contraseña opcional
-    });
+      password: ['', [Validators.required, this.passwordStrengthValidator]], // Campo contraseña obligatorio
+      confirmPassword: ['', [Validators.required]]
+    }, { validator: this.passwordsMatchValidator });
   }
 
   async ngOnInit(): Promise<void> {
@@ -36,6 +36,31 @@ export class RegisterFormComponent implements OnInit {
     } catch (error) {
       console.error('Error al cargar los correos:', error);
     }
+  }
+
+  passwordsMatchValidator(group: FormGroup): ValidationErrors | null {
+    const password = group.get('password')?.value;
+    const confirmPassword = group.get('confirmPassword')?.value;
+    return password === confirmPassword ? null : { passwordsMismatch: true };
+  }
+
+  passwordStrengthValidator(control: AbstractControl): ValidationErrors | null {
+    const password = control.value;
+  
+    if (!password) {
+      return null;
+    }
+  
+    // Verificar si la contraseña cumple con los requisitos
+    const hasUpperCase = /[A-Z]/.test(password);
+    const hasLowerCase = /[a-z]/.test(password);
+    const hasNumeric = /\d/.test(password);
+    const hasSpecialChar = /[!@#$%^&*(),.?":{}|<>]/.test(password);
+    const isValidLength = password.length >= 8;
+  
+    const passwordValid = hasUpperCase && hasLowerCase && hasNumeric && hasSpecialChar && isValidLength;
+  
+    return !passwordValid ? { passwordStrength: true } : null;
   }
 
   // Validador asíncrono para verificar si el email ya existe

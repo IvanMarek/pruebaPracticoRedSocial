@@ -5,9 +5,12 @@ import { UsuariosModule } from './usuarios/usuarios.module';
 import { usuario } from './usuarios/entities/usuario.entity';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AuthModule } from './auth/auth.module';
+import { MulterModule } from '@nestjs/platform-express';
 
 @Module({
-  imports:[TypeOrmModule.forRoot({
+  imports:[
+    MulterModule.register({dest: './uploads',    }),
+    TypeOrmModule.forRoot({
     type: 'mysql',
     host:'localhost',
     port: 3305,

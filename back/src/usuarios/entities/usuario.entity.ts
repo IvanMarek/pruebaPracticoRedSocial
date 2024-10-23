@@ -1,19 +1,32 @@
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
 
-@Entity ({name: 'usuario'})
 
+@Entity()
 export class usuario {
-    @PrimaryGeneratedColumn({type:'int',})
-    id:number;
+  @PrimaryGeneratedColumn()
+  id: number;
 
-    @Column ({ type: 'varchar'})
-    nombre: string;
+  @Column()
+  nombre: string;
 
-    @Column({ type: 'varchar', unique: true }) // Nuevo campo email único
-    email: string;
+  @Column({ unique: true })
+  email: string;
 
-    @Column ({type: 'varchar'})
-    contraseña: string;
+  @Column({ nullable: true })
+  biografia: string;
+
+  @Column({ nullable: true })
+  fotoPerfil: string;
+
+  @Column()
+  contraseña: string;
+
+  @Column({ default: true })
+  activo: boolean;
+
+  @Column({ default: 'usuario' })
+  rol: string;
 }
+
 

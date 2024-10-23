@@ -1,29 +1,26 @@
-import {
-  Body,
-  Controller,
-  Get,
-  HttpCode,
-  HttpStatus,
-  Post,
-  Request,
-  UseGuards
-} from '@nestjs/common';
-import { AuthGuard } from './auth.guard';
+import { Body, Controller, Post, Put, Param, Patch, UnauthorizedException } from '@nestjs/common';
 import { AuthService } from './auth.service';
+import { CreateUsuarioDto } from '../usuarios/dto/create-usuario.dto'; // Importa el DTO
+import { UpdateUsuarioDto } from '../usuarios/dto/update-usuario.dto'; // Importa el DTO
 
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
-  /*@Post('login')
-  async login(@Body() body: any) {
-      const { usuario, contraseña } = body;
-      return this.authService.login(usuario, contraseña)
-  }*/
+  @Post('register')
+  async register(@Body() createUsuarioDto: CreateUsuarioDto) {
+    return await this.authService.register(createUsuarioDto);
+  }
 
-  @UseGuards(AuthGuard)
-  @Get('profile')
-  getProfile(@Request() req) {
-      return req.user;
+  @Patch('update/:id')
+  async update(@Param('id') id: number, @Body() updateUsuarioDto: UpdateUsuarioDto) {
+    return await this.authService.update(id, updateUsuarioDto);
+  }
+
+  @Post('login')
+  async login(@Body() body: { email: string; contraseña: string }) {
+      const { email, contraseña } = body;
+      const tokenResponse = await this.authService.login(email, contraseña);
+      return tokenResponse; // Asegúrate de que esto contenga el token
   }
 }

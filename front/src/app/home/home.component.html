@@ -1,34 +1,58 @@
-<nav class="navbar">
-    <div class="navbar-brand">
-      <a href="home">RedSocial</a>
-    </div>
-    <ul class="navbar-nav">
-      <li><a href="#">Home</a></li>
-      <li><a href="#">About</a></li>
-      <li><a href="#">Contact</a></li>
+<!-- home.component.html -->
+
+<!-- Barra de navegación -->
+<div class="navbar">
+  <!-- Enlaces para navegar a diferentes secciones -->
+  <a href="/home">Inicio</a>
+  <a href="#">Explorar</a>
+  <a href="#">Mensajes</a>
+  <a href="/perfil">Mi Perfil</a>
+</div>
+
+<!-- Contenedor principal del home -->
+<div class="container">
+  <!-- Barra lateral con sugerencias de usuarios -->
+  <div class="sidebar">
+    <h3>Sugerencias para ti</h3>
+    <ul>
+      <!-- Aquí irán los usuarios sugeridos -->
+      <li>Usuario 1</li>
+      <li>Usuario 2</li>
+      <li>Usuario 3</li>
     </ul>
-    <form class="search-form" action="home"method="GET">
-      <input type="text" placeholder="Buscar usuarios..." name="search" required>
-      <button type="submit">Buscar</button>
-    </form>
-  </nav>
-  
-  <!-- Main Content -->
-  <div class="container">
-    <div class="card">
-      <img src="assets/MercedesF1.png" alt="Card Image 1">
-      <h3>Card Title 1</h3>
-      <p>This is a description for the first card.</p>
+  </div>
+
+  <!-- Área central donde aparecerán las publicaciones -->
+  <div class="content">
+    <!-- Caja para crear una nueva publicación -->
+    <div class="create-post">
+      <!-- Campo para escribir un post -->
+      <textarea placeholder="¿Qué estás pensando?"></textarea>
+      <!-- Botón para publicar -->
+      <button>Publicar</button>
     </div>
-    <div class="card">
-      <img src="assets/CorvetteC7.png" alt="Card Image 2">
-      <h3>Card Title 2</h3>
-      <p>This is a description for the second card.</p>
+
+    <!-- Aquí se mostrarán las publicaciones de los usuarios -->
+    <div class="post">
+      <h4>Usuario Ejemplo</h4>
+      <p>Contenido de la publicación de ejemplo.</p>
     </div>
-    <div class="card">
-      <img src="assets/SupraMk5.jpg" alt="Card Image 3">
-      <h3>Card Title 3</h3>
-      <p>This is a description for the third card.</p>
+
+    <!-- Repetir este bloque para cada publicación -->
+    <div class="post">
+      <h4>Usuario Ejemplo 2</h4>
+      <p>Otra publicación de ejemplo.</p>
     </div>
   </div>
-  
+
+  <!-- Barra lateral con tendencias o temas populares -->
+  <div class="trends">
+    <h3>Tendencias</h3>
+    <ul>
+      <!-- Aquí irán los temas populares -->
+      <li>Tendencia 1</li>
+      <li>Tendencia 2</li>
+      <li>Tendencia 3</li>
+    </ul>
+  </div>
+</div>

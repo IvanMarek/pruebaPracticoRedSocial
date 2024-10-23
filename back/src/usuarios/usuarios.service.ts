@@ -3,12 +3,11 @@ import { CreateUsuarioDto } from './dto/create-usuario.dto';
 import { UpdateUsuarioDto } from './dto/update-usuario.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import {usuario} from './entities/usuario.entity';
-import * as bcrypt from 'bcrypt'
+import { usuario } from './entities/usuario.entity';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class UsuariosService {
-
   @InjectRepository(usuario)
   private usuarioRepository: Repository<usuario>;
 
@@ -18,121 +17,112 @@ export class UsuariosService {
     return hashedPassword;
   }
 
-  
   public async comparePasswords(contraseña: string, hashedPassword: string): Promise<boolean> {
     return await bcrypt.compare(contraseña, hashedPassword);
- }
- public async create(createUsuarioDto: CreateUsuarioDto) {
-  let match = false;
-  try {
-    console.log(createUsuarioDto)
-    const usuarios = await this.usuarioRepository.find();
-    for (let userF of usuarios) {
-      if (createUsuarioDto.email === userF.email) {
-        match = true;
-        break;  // No es necesario seguir buscando si ya encontramos una coincidencia
-      }
-    }
-    if (match) {
-      throw new Error('Ya existe un usuario con ese E-mail');
-    }
-    const hashedPassword = await this.hashPassword(createUsuarioDto.contraseña);
-    await this.usuarioRepository.save({ nombre: createUsuarioDto.nombre, contraseña: hashedPassword, email: createUsuarioDto.email });
-    return {
-      statusCode: 200,
-      msg: 'El usuario se inserto adecuadamente'
-    };
-  } catch (error) {
-    console.log(error);
-  }
   }
 
+  // Método para encontrar un usuario por su email
+  public async findByEmail(email: string): Promise<usuario | undefined> {
+    return await this.usuarioRepository.findOne({ where: { email } });
+  }
 
-  public async findAll() {
-    try{
-      const usuarios = await this.usuarioRepository.find()
-      if (usuarios.length > 0){
-        return usuarios
-      } else{
-        return{
-          statusCode: 400,
-          msg: "No existen usuarios registrados"
-        }
+  public async create(createUsuarioDto: CreateUsuarioDto) {
+    try {
+      const existingUser = await this.findByEmail(createUsuarioDto.email);
+      if (existingUser) {
+        throw new BadRequestException('Ya existe un usuario con ese E-mail');
       }
-    } catch(error){
-      return new BadRequestException(error)
+
+      // Hasheamos la contraseña
+      const hashedPassword = await this.hashPassword(createUsuarioDto.contraseña);
+
+      // Guardamos el nuevo usuario
+      const nuevoUsuario = this.usuarioRepository.create({
+        ...createUsuarioDto,
+        contraseña: hashedPassword,
+        rol: createUsuarioDto.rol || 'user',
+        activo: createUsuarioDto.activo ?? true,
+      });
+
+      await this.usuarioRepository.save(nuevoUsuario);
+      return {
+        statusCode: 200,
+        msg: 'El usuario se creó correctamente',
+      };
+    } catch (error) {
+      throw new BadRequestException('Error al crear el usuario');
+    }
+  }
+
+  public async findAll(): Promise<usuario[]> {
+    try {
+      return await this.usuarioRepository.find();
+    } catch (error) {
+      throw new BadRequestException(error);
     }
   }
 
   public async findOne(id: number) {
-    try{
-      const Usuario = await this.usuarioRepository.findOneBy({id:id})
-      if (Usuario){
-        return Usuario
-      } else{
-        return{
-          statusCode: 400,
-          msg: "El usuarios no existe"
-        }
+    try {
+      const usuario = await this.usuarioRepository.findOneBy({ id });
+      if (!usuario) {
+        throw new BadRequestException("El usuario no existe");
       }
-    } catch(error){
-      return new BadRequestException(error)
+      return usuario;
+    } catch (error) {
+      throw new BadRequestException(error);
     }
   }
 
-
   public async update(id: number, updateUsuarioDto: UpdateUsuarioDto) {
-    try{
-      await this.usuarioRepository.update(id, updateUsuarioDto)
-      return{
+    try {
+      const updatedUser = {
+        ...updateUsuarioDto,
+        rol: updateUsuarioDto.rol || 'user',
+        activo: updateUsuarioDto.activo ?? true,
+      };
+
+      await this.usuarioRepository.update(id, updatedUser);
+      return {
         statusCode: 201,
-        msg: 'El usuario se modificó correctamente'
-      }
-    }catch (error){
-      return new BadRequestException(error)
+        msg: 'El usuario se modificó correctamente',
+      };
+    } catch (error) {
+      throw new BadRequestException(error);
     }
   }
 
   public async remove(id: number) {
-    try{
-      await this.usuarioRepository.delete(id)
-      return{
+    try {
+      await this.usuarioRepository.delete(id);
+      return {
         statusCode: 200,
-        msg: 'El usuario se elimino correctamente'
-      }
-    }catch(error){
-      return new BadRequestException(error)
+        msg: 'El usuario se eliminó correctamente',
+      };
+    } catch (error) {
+      throw new BadRequestException(error);
     }
   }
 
-public async login(email: string, contraseña: string) {
-  try{
-    let match : any
-    let id : any
-    const users = await this.usuarioRepository.find()
-    for (let user of users) {
-      if (email === user.email) {
-        match = await this.comparePasswords(contraseña, user.contraseña)
-        if(match){
-          id = user.id
-        }
+  public async login(email: string, contraseña: string) {
+    try {
+      const user = await this.findByEmail(email);
+      if (!user) {
+        throw new BadRequestException('Credenciales incorrectas A');
       }
-    }
-    if(!match){
+
+      const match = await this.comparePasswords(contraseña, user.contraseña);
+      if (!match) {
+        throw new BadRequestException('Credenciales incorrectas B');
+      }
+
       return {
-        statusCode: 401,
-        msg: "Credenciales incorrectas"
-      }
-    }
-    const payload = { sub: id, usuario:usuario};
-    /* const token = this.authService.generateToken({ username, sub: id }) */
-    return {
         statusCode: 200,
-        msg: "Inicio de sesión exitoso",
-        /* token */
-      }
+        msg: 'Inicio de sesión exitoso',
+        userId: user.id, // Retorna el ID del usuario o cualquier otra información que necesites
+      };
     } catch (error) {
-    return new BadRequestException(error)
+      throw new BadRequestException(error);
+    }
   }
-}
 }
